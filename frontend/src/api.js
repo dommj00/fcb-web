@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Use ngrok URL to connect to Dell PC server
-const API_BASE_URL = 'https://furyclips.ngrok.io';
+const API_BASE_URL = 'https://api.furyclips.com';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
