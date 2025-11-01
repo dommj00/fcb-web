@@ -59,7 +59,7 @@ function App() {
       useEffect(() => {
         const connectWebSocket = () => {
           // Use WSS (secure WebSocket) for ngrok HTTPS tunnel
-          const websocket = new WebSocket('wss://idell-unparenthesised-consecutively.ngrok-free.dev/ws/queue');
+          const websocket = new WebSocket('wss://furyclips.ngrok.io/ws/queue');
           
           websocket.onopen = () => {
             console.log('WebSocket connected');
