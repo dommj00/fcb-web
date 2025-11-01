@@ -1,0 +1,16 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "framework": "create-react-app",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "REACT_APP_API_URL": "https://idell-unparenthesised-consecutively.ngrok-free.dev",
+    "REACT_APP_GCP_PROJECT_ID": "furyclips",
+    "REACT_APP_GCS_BUCKET": "furyclips-clips"
+  }
+}
