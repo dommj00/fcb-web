@@ -3,6 +3,26 @@ import './App.css';
 import { getClips, getStats, deleteClip, getDownloadUrl, getBotStatus, startBot, stopBot, restartBot, createQuickClip, getQueueStatus, cancelClip, cancelMultipleClips, getEditedClips, bulkDeleteClips, bulkDeleteEditedClips, clearBufferCache, clearSystemLogs, clearTempFiles, getLogs } from './api';
 import ClipEditorModal from './ClipEditorModal';
 
+// Helper function to format date
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${month}/${day}/${year} - ${hours}:${minutes}`;
+};
+
+// Helper function to format duration with hours (0:05:15 format)
+const formatDuration = (seconds) => {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${hrs}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+};
+
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [clips, setClips] = useState([]);
@@ -59,7 +79,7 @@ function App() {
       useEffect(() => {
         const connectWebSocket = () => {
           // Use WSS (secure WebSocket) for ngrok HTTPS tunnel
-          const websocket = new WebSocket('wss://furyclips.ngrok.io/ws/queue');
+          const websocket = new WebSocket('wss://idell-unparenthesised-consecutively.ngrok-free.dev/ws/queue');
           
           websocket.onopen = () => {
             console.log('WebSocket connected');
@@ -948,32 +968,74 @@ function ClipsPage({
                 </div>
               )}
 
-              <div style={{
-                width: '100%',
-                height: '180px',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                borderRadius: '12px',
-                marginBottom: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '48px'
-              }}>
-                <i className="fas fa-play-circle"></i>
-              </div>
-              
-              <div style={{ marginBottom: '12px' }}>
-                <div style={{ fontWeight: '700', marginBottom: '4px' }}>Clip {clip.clip_id.substring(0, 8)}</div>
-                <div style={{ fontSize: '13px', color: '#64748b' }}>
-                  {clip.duration}s • {clip.resolution} • {clip.direction}
+                <div style={{
+                  width: '100%',
+                  height: '180px',
+                  borderRadius: '12px',
+                  marginBottom: '16px',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  background: '#1e293b'
+                }}>
+                  {clip.thumbnail_url ? (
+                    <>
+                      <img
+                        src={clip.thumbnail_url}
+                        alt="Clip thumbnail"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                      />
+                      {/* Duration overlay */}
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '8px',
+                        right: '8px',
+                        background: 'rgba(0, 0, 0, 0.7)',
+                        color: 'white',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        fontFamily: 'monospace'
+                      }}>
+                        {formatDuration(clip.duration)}
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      color: 'white',
+                      fontSize: '48px'
+                    }}>
+                      <i className="fas fa-play-circle"></i>
+                    </div>
+                  )}
                 </div>
-                {clip.stream_title && (
-                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
-                    {clip.stream_title.substring(0, 30)}{clip.stream_title.length > 30 ? '...' : ''}
+              
+                              
+                <div style={{ marginBottom: '12px' }}>
+                  <div style={{ fontWeight: '700', marginBottom: '4px' }}>Clip {clip.clip_id.substring(0, 8)}</div>
+                  {/* Add date below clip ID */}
+                  <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>
+                    {formatDate(clip.created_at)}
                   </div>
-                )}
-              </div>
+                  <div style={{ fontSize: '13px', color: '#64748b' }}>
+                    {clip.duration}s • {clip.resolution} • {clip.direction}
+                  </div>
+                  {clip.stream_title && (
+                    <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
+                      {clip.stream_title.substring(0, 30)}{clip.stream_title.length > 30 ? '...' : ''}
+                    </div>
+                  )}
+                </div>
 
               <div style={{
                 display: 'flex',
